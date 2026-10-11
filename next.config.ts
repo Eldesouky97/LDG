@@ -1,9 +1,14 @@
 import type { NextConfig } from "next";
 
+// GitHub Pages serves the site from /LDG, so its build sets NEXT_PUBLIC_BASE_PATH.
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || undefined;
+
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  output: "export",
+  basePath,
+  images: {
+    unoptimized: true,
+  },
   turbopack: {
     rules: {
       "*.css": {

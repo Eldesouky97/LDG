@@ -1,24 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lilian Data Group
 
-## Getting Started
+Arabic-first, bilingual corporate website and solutions showcase built with Next.js App Router, TypeScript, Tailwind CSS, and Framer Motion.
 
-First, run the development server:
+## Run locally
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+From the workspace root:
+
+```powershell
+npm --prefix .\ldg-website run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+npm --prefix .\ldg-website run lint
+npm --prefix .\ldg-website run build
+```
+
+The page is in `src/app/page.tsx`, global styling in `src/app/globals.css`, and the approved ribbon mark in `public/ldg-ribbon-logo.png`.
+
+## Content before launch
+
+The product names and case-study visuals are illustrative concepts, not confirmed LDG products or client work. Replace them with approved product names, real project details, and verified company information. The contact form currently opens a prefilled email draft; configure the company's recipient address or a submission endpoint before launch.
 
 ## Learn More
 
@@ -31,6 +36,6 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Deploy the app with the hosting provider configured for your organization, such as [Vercel](https://vercel.com/new).
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
