@@ -173,7 +173,7 @@ export default function Home() {
   return (
     <MotionConfig reducedMotion="user">
     <main className="site-shell" dir={rtl ? "rtl" : "ltr"}>
-      {previewMode ? <div className="site-preview-banner">{rtl ? 'معاينة مسودة غير منشورة' : 'Unpublished draft preview'}<a href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/admin/`}>{rtl ? 'العودة للإدارة' : 'Back to admin'}</a></div> : null}
+      {previewMode ? <div className="site-preview-banner">{rtl ? 'معاينة مسودة غير منشورة' : 'Unpublished draft preview'}<a href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/admin`}>{rtl ? 'العودة للإدارة' : 'Back to admin'}</a></div> : null}
       <motion.div className="scroll-progress" style={{ scaleX: reducedMotion ? scrollYProgress : progress }} aria-hidden="true" />
       <header className="site-header">
         <a
