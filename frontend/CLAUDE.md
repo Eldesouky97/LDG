@@ -21,7 +21,7 @@ Run `npm --prefix ./frontend test` for the Node.js content validation tests. Lin
 ## Deployment (all free tiers, project name LDG)
 
 - **GitHub:** public repo `Eldesouky97/LDG`. Pushing to `main` runs `.github/workflows/deploy-pages.yml`, which builds with `NEXT_PUBLIC_BASE_PATH=/LDG` and deploys to GitHub Pages (https://eldesouky97.github.io/LDG/). For a local base-path build in Git Bash, prefix `MSYS_NO_PATHCONV=1` or the path gets mangled.
-- **Vercel:** project `ldg` (https://ldg-eta.vercel.app), connected to the GitHub repo, so every push to `main` deploys automatically. Manual deploy: `vercel --prod`.
+- **Vercel:** project `ldg` (https://ldg-eta.vercel.app), Root Directory `frontend`, connected to the GitHub repo, so every push to `main` deploys automatically. Manual deploy: `vercel --prod`.
 - **Firebase Hosting:** project ID `ldg-website-app` (display name "LDG Website"; Google requires at least 4 characters, and `ldg-website` was taken), https://ldg-website-app.web.app. Run `npm run build` without the base path, then run `node prepare-hosting.mjs` and `firebase deploy --only hosting` from backend/.
 
 ## Next.js version caveat (from `frontend/AGENTS.md`)
