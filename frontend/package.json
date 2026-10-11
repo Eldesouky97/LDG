@@ -1,16 +1,18 @@
 {
-  "name": "ldg-website",
+  "name": "lilian-data-group",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "@fontsource/cairo": "^5.3.0",
     "@fontsource/plus-jakarta-sans": "^5.3.0",
+    "firebase": "^12.4.0",
     "framer-motion": "^14.1.0",
     "lucide-react": "^1.55.0",
     "next": "16.4.0",
@@ -26,6 +28,9 @@
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "@grpc/grpc-js": "^1.13.6"
   },
   "engines": {
     "node": ">=22"

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { defaultSiteContent, parseSiteContent, safeImage, safeLink } from '@/shared/content/site-content';
 import { useEffect, useState, type FormEvent } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig, useMotionValue, useReducedMotion, useScroll, useSpring } from "framer-motion";
 import {
   ArrowDownLeft,
   ArrowLeft,
@@ -27,245 +28,25 @@ import {
 
 const logoSrc = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/ldg-ribbon-logo.webp`;
 
-type Language = "ar" | "en";
-const content = {
-  ar: {
-    nav: ["من نحن", "خدماتنا", "حلولنا", "القطاعات", "مشروعاتنا", "رؤى LDG"],
-    talk: "تحدث إلى فريقنا",
-    eyebrow: "DATA · SYSTEMS · DIGITAL TRANSFORMATION",
-    hero: ["بياناتك تستحق", "أن تعمل بذكاء أكبر."],
-    intro:
-      "نصمم ونبني أنظمة رقمية تحول البيانات المعقدة إلى قرارات أوضح، وعمليات أسرع، ونمو يمكن قياسه.",
-    explore: "اكتشف حلولنا",
-    start: "ابدأ محادثة",
-    trust: "شريك التقنية لفرق تبني المستقبل",
-    heroNote: "من الإشارة إلى القرار، كل شيء متصل.",
-    aboutKicker: "نبني ما يأتي بعد ذلك",
-    about: ["التقنية الجيدة لا تضيف تعقيدًا.", "إنها تزيله."],
-    aboutText:
-      "في Lilian Data Group، نربط الاستراتيجية بالهندسة لنصنع تجارب وأنظمة تخدم العمل الحقيقي. من أول سؤال إلى ما بعد الإطلاق، فريق واحد يفكر معك ويصنع أثرًا يدوم.",
-    aboutLink: "تعرّف على LDG",
-    servicesLabel: "ما نبنيه معك",
-    servicesTitle: ["أساس رقمي أقوى.", "مساحة أوسع للنمو."],
-    servicesIntro: "خبرات متصلة تغطي دورة التحول الرقمي كاملة.",
-    services: [
-      [
-        "البيانات والتحليلات",
-        "حوّل بياناتك إلى صورة واضحة وخطوة واثقة.",
-        "DATA & ANALYTICS",
-      ],
-      [
-        "ذكاء الأعمال",
-        "مؤشرات ولوحات قيادة تجعل القرار أقرب.",
-        "BUSINESS INTELLIGENCE",
-      ],
-      [
-        "تطوير المواقع والتطبيقات",
-        "تجارب رقمية سريعة، مصممة للناس والعمل.",
-        "WEB & MOBILE",
-      ],
-      [
-        "الأنظمة الإدارية ERP",
-        "عمليات مترابطة تنمو مع احتياجات مؤسستك.",
-        "ENTERPRISE SYSTEMS",
-      ],
-      [
-        "الحلول السحابية",
-        "بنية مرنة وآمنة، جاهزة لما هو قادم.",
-        "CLOUD SOLUTIONS",
-      ],
-      [
-        "التحول الرقمي",
-        "خارطة طريق عملية من الفكرة إلى أثر ملموس.",
-        "DIGITAL TRANSFORMATION",
-      ],
-    ],
-    solutionsLabel: "منتجات LDG",
-    solutionsTitle: ["أنظمة تفهم عملك.", "وتتطور معه."],
-    solutionsIntro: "حلول برمجية مرنة صممناها لتواجه تحديات العمل اليومية.",
-    products: ["مدار", "وصل", "مخزون"],
-    productTypes: [
-      "إدارة موارد المؤسسات",
-      "إدارة الخدمات والعمليات",
-      "إدارة المخزون والتوريد",
-    ],
-    productText: [
-      "منصة موحدة تربط المالية والموارد والعمليات في رؤية واحدة.",
-      "نظّم الطلبات والفرق وسير العمل من نقطة بداية واحدة.",
-      "تحكم في حركة المخزون وتوقع الاحتياج بثقة أكبر.",
-    ],
-    demo: "اطلب عرضًا توضيحيًا",
-    quote: "اطلب عرض سعر",
-    discover: "استكشف الحل",
-    industriesLabel: "خبرة عبر قطاعات مختلفة",
-    industriesTitle: "نبدأ من واقع قطاعك.",
-    industries: [
-      "اللوجستيات",
-      "التجارة",
-      "التعليم",
-      "التجزئة",
-      "الرعاية الصحية",
-    ],
-    projectsLabel: "أثر يمكن ملاحظته",
-    projectsTitle: "من التحدي إلى تغيير حقيقي.",
-    projectsText: "نماذج من المساحات التي نصنع فيها فرقًا مع فرق العمل.",
-    projectTypes: ["منصة تحليلات", "منظومة تشغيل", "تجربة تجارة رقمية"],
-    concept: "نماذج توضيحية",
-    insightsLabel: "أفكار تستحق المشاركة",
-    insightsTitle: "رؤى من عالم البيانات والتقنية.",
-    articles: [
-      "من البيانات المتفرقة إلى قرار موحد",
-      "ما الذي يجعل التحول الرقمي قابلًا للاستمرار؟",
-      "كيف تختار بنية سحابية تناسب نموك؟",
-    ],
-    read: "اقرأ المقال",
-    contactKicker: "الخطوة التالية تبدأ بسؤال",
-    contactTitle: ["ما الذي يمكننا", "بناءه معًا؟"],
-    contactText:
-      "أخبرنا عن فكرتك أو التحدي الذي تعمل عليه، وسنرتب معك الخطوة المناسبة.",
-    name: "الاسم",
-    namePlaceholder: "كيف نناديك؟",
-    email: "البريد الإلكتروني",
-    emailPlaceholder: "name@company.com",
-    interest: "مهتم بـ",
-    choose: "اختر مجالًا",
-    message: "نبذة عن مشروعك",
-    messagePlaceholder: "ما الذي تريد تحقيقه؟",
-    send: "إرسال طلب التواصل",
-    formHint: "سيتم فتح رسالة جاهزة في تطبيق البريد لديك.",
-    footer: "البيانات · الأنظمة · التحول الرقمي",
-    rights: "جميع الحقوق محفوظة.",
-    menu: "القائمة",
-    close: "إغلاق",
-    required: "يرجى إكمال الحقول المطلوبة.",
-  },
-  en: {
-    nav: [
-      "About",
-      "Services",
-      "Solutions",
-      "Industries",
-      "Projects",
-      "Insights",
-    ],
-    talk: "Talk to our team",
-    eyebrow: "DATA · SYSTEMS · DIGITAL TRANSFORMATION",
-    hero: ["Your data deserves", "to work smarter."],
-    intro:
-      "We design and build digital systems that turn complex data into clearer decisions, faster operations, and measurable growth.",
-    explore: "Explore solutions",
-    start: "Start a conversation",
-    trust: "Technology partner to teams building what’s next",
-    heroNote: "From signal to decision, everything connected.",
-    aboutKicker: "Building what comes next",
-    about: ["Good technology doesn’t add complexity.", "It removes it."],
-    aboutText:
-      "At Lilian Data Group, we connect strategy with engineering to create experiences and systems built for real work. From the first question to post-launch, one team thinks with you and creates lasting impact.",
-    aboutLink: "Meet LDG",
-    servicesLabel: "What we build together",
-    servicesTitle: ["A stronger digital foundation.", "More room to grow."],
-    servicesIntro:
-      "Connected expertise across the full digital transformation journey.",
-    services: [
-      [
-        "Data & Analytics",
-        "Turn your data into clarity and confident next steps.",
-        "DATA & ANALYTICS",
-      ],
-      [
-        "Business Intelligence",
-        "Signals and dashboards that bring decisions closer.",
-        "BUSINESS INTELLIGENCE",
-      ],
-      [
-        "Web & Mobile",
-        "Fast digital experiences designed for people and work.",
-        "WEB & MOBILE",
-      ],
-      [
-        "Enterprise Systems",
-        "Connected operations that grow with your business.",
-        "ENTERPRISE SYSTEMS",
-      ],
-      [
-        "Cloud Solutions",
-        "Flexible, secure infrastructure ready for what’s next.",
-        "CLOUD SOLUTIONS",
-      ],
-      [
-        "Digital Transformation",
-        "A practical path from idea to measurable impact.",
-        "DIGITAL TRANSFORMATION",
-      ],
-    ],
-    solutionsLabel: "LDG products",
-    solutionsTitle: [
-      "Systems that understand your business.",
-      "And grow with it.",
-    ],
-    solutionsIntro:
-      "Flexible software built to meet the challenges of everyday work.",
-    products: ["Madar", "Wasl", "Makhzan"],
-    productTypes: [
-      "Enterprise resource planning",
-      "Service & operations management",
-      "Inventory & supply management",
-    ],
-    productText: [
-      "One platform connecting finance, people, and operations in a shared view.",
-      "Organize requests, teams, and workflows from one starting point.",
-      "Control inventory movement and forecast demand with greater confidence.",
-    ],
-    demo: "Request a demo",
-    quote: "Request a quote",
-    discover: "Explore solution",
-    industriesLabel: "Experience across industries",
-    industriesTitle: "We start with your reality.",
-    industries: ["Logistics", "Commerce", "Education", "Retail", "Healthcare"],
-    projectsLabel: "Impact you can see",
-    projectsTitle: "From challenge to meaningful change.",
-    projectsText: "A glimpse of where we make a difference alongside teams.",
-    projectTypes: [
-      "Analytics platform",
-      "Operations system",
-      "Digital commerce",
-    ],
-    concept: "Illustrative concepts",
-    insightsLabel: "Ideas worth sharing",
-    insightsTitle: "Perspectives on data and technology.",
-    articles: [
-      "From scattered data to a shared decision",
-      "What makes digital transformation last?",
-      "How to choose a cloud architecture for growth",
-    ],
-    read: "Read article",
-    contactKicker: "The next step starts with a question",
-    contactTitle: ["What could we", "build together?"],
-    contactText:
-      "Tell us about your idea or challenge, and we’ll find the right next step together.",
-    name: "Name",
-    namePlaceholder: "What should we call you?",
-    email: "Work email",
-    emailPlaceholder: "name@company.com",
-    interest: "I’m interested in",
-    choose: "Choose an area",
-    message: "A little about your project",
-    messagePlaceholder: "What are you looking to achieve?",
-    send: "Send an inquiry",
-    formHint: "A ready-to-send message will open in your email app.",
-    footer: "DATA · SYSTEMS · DIGITAL TRANSFORMATION",
-    rights: "All rights reserved.",
-    menu: "Menu",
-    close: "Close",
-    required: "Please complete the required fields.",
-  },
-} as const;
+import { content, type Language } from "./content/translations";
 
 const serviceIcons = [Database, BarChart3, Code2, Boxes, Cloud, Network];
 const solutionIcons = [Layers3, Network, Database];
 
+function readPreview() {
+  if (new URLSearchParams(window.location.search).get('preview') !== '1') return null;
+  try {
+    const payload = sessionStorage.getItem('ldg-preview');
+    return payload ? parseSiteContent(payload) : null;
+  } catch {
+    return null; // Invalid preview falls back to published content.
+  }
+}
+
 export default function Home() {
   const [language, setLanguage] = useState<Language>("ar");
+  const [siteContent, setSiteContent] = useState(defaultSiteContent);
+  const [previewMode, setPreviewMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(0);
   const [inquiryInterest, setInquiryInterest] = useState("");
@@ -273,7 +54,22 @@ export default function Home() {
     null,
   );
   const [formMessage, setFormMessage] = useState("");
-  const t = content[language];
+  const reducedMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  const pointerX = useMotionValue(0);
+  const pointerY = useMotionValue(0);
+  const visualX = useSpring(pointerX, { stiffness: 80, damping: 22 });
+  const visualY = useSpring(pointerY, { stiffness: 80, damping: 22 });
+  const t = {
+    ...content[language],
+    hero: [siteContent.heroFirst[language], siteContent.heroSecond[language]],
+    intro: siteContent.heroDescription[language],
+    about: [siteContent.aboutFirst[language], siteContent.aboutSecond[language]],
+    aboutText: siteContent.aboutDescription[language],
+    contactText: siteContent.contactDescription[language],
+  };
+  const currentLogo = safeImage(siteContent.logo) || logoSrc;
   const rtl = language === "ar";
   const navIds = [
     "about",
@@ -285,9 +81,64 @@ export default function Home() {
   ];
 
   useEffect(() => {
+    let stopped = false;
+    let unsubscribe: (() => void) | undefined;
+    const preview = readPreview();
+    if (preview) {
+      // Applied after hydration, which must match the static HTML.
+      void Promise.resolve().then(() => {
+        if (stopped) return;
+        setSiteContent(preview);
+        setPreviewMode(true);
+      });
+      return () => { stopped = true; };
+    }
+    import('@/services/firebase/content-repository').then(({watchPublished}) => {
+      if (stopped) return;
+      unsubscribe = watchPublished(setSiteContent, () => { /* Keep the static fallback available offline. */ });
+    }).catch(() => {});
+    return () => { stopped = true; unsubscribe?.(); };
+  }, []);
+
+  useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = rtl ? "rtl" : "ltr";
   }, [language, rtl]);
+
+  useEffect(() => {
+    const targets = document.querySelectorAll<HTMLElement>(
+      ".section-heading, .about-copy, .about-art, .solutions-layout, .industries-intro, .industry-chip, .project-card, .insight-card, .contact-copy, .contact-form",
+    );
+    if (reducedMotion || !("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    targets.forEach((target) => {
+      target.classList.add("reveal-ready");
+      const siblings = target.parentElement?.children;
+      const index = siblings ? Array.from(siblings).indexOf(target) : 0;
+      target.style.setProperty("--reveal-delay", `${Math.min(index, 4) * 65}ms`);
+      observer.observe(target);
+    });
+    return () => {
+      observer.disconnect();
+      targets.forEach((target) => target.classList.remove("reveal-ready", "is-revealed"));
+    };
+  }, [reducedMotion, siteContent.projects, siteContent.partners]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("keydown", closeOnEscape);
+    return () => document.removeEventListener("keydown", closeOnEscape);
+  }, [menuOpen]);
 
   function sendInquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -315,12 +166,15 @@ export default function Home() {
     const body = encodeURIComponent(
       `${requestType}\n${t.name}: ${name}\n${t.email}: ${email}\n${t.interest}: ${interest}\n\n${message}`,
     );
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${encodeURIComponent(siteContent.email).replace('%40','@')}?subject=${subject}&body=${body}`;
     setFormMessage("");
   }
 
   return (
+    <MotionConfig reducedMotion="user">
     <main className="site-shell" dir={rtl ? "rtl" : "ltr"}>
+      {previewMode ? <div className="site-preview-banner">{rtl ? 'معاينة مسودة غير منشورة' : 'Unpublished draft preview'}<a href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/admin/`}>{rtl ? 'العودة للإدارة' : 'Back to admin'}</a></div> : null}
+      <motion.div className="scroll-progress" style={{ scaleX: reducedMotion ? scrollYProgress : progress }} aria-hidden="true" />
       <header className="site-header">
         <a
           href="#home"
@@ -328,18 +182,28 @@ export default function Home() {
           aria-label="Lilian Data Group home"
         >
           <Image
-            src={logoSrc}
+            src={currentLogo}
             alt="LDG"
             width={58}
             height={38}
+            className="brand-logo"
+            style={{
+              width: "var(--brand-logo-width, 58px)",
+              height: "var(--brand-logo-height, 38px)",
+              maxWidth: 58,
+              maxHeight: 38,
+              objectFit: "contain",
+              flexShrink: 0,
+            }}
             priority
           />
           <span className="brand-name">
-            Lilian <b>Data</b> Group
+            {siteContent.companyName}
           </span>
         </a>
         <nav
           className={`main-nav ${menuOpen ? "is-open" : ""}`}
+          id="main-navigation"
           aria-label={rtl ? "التنقل الرئيسي" : "Main navigation"}
         >
           {t.nav.map((label, index) => (
@@ -382,6 +246,8 @@ export default function Home() {
             type="button"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? t.close : t.menu}
+            aria-expanded={menuOpen}
+            aria-controls="main-navigation"
           >
             {menuOpen ? <X size={21} /> : <Menu size={21} />}
           </button>
@@ -443,15 +309,22 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.94 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, delay: 0.12 }}
+          onPointerMove={(event) => {
+            if (reducedMotion || event.pointerType !== "mouse") return;
+            const bounds = event.currentTarget.getBoundingClientRect();
+            pointerX.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 18);
+            pointerY.set(((event.clientY - bounds.top) / bounds.height - 0.5) * 14);
+          }}
+          onPointerLeave={() => { pointerX.set(0); pointerY.set(0); }}
         >
           <div className="visual-orbit orbit-one" />
           <div className="visual-orbit orbit-two" />
           <div className="visual-glow" />
           <div className="data-thread thread-one" />
           <div className="data-thread thread-two" />
-          <div className="visual-center">
+          <motion.div className="visual-center" style={{ x: visualX, y: visualY }}>
             <Image
-              src={logoSrc}
+              src={currentLogo}
               alt="Lilian Data Group ribbon logo"
               width={370}
               height={245}
@@ -460,7 +333,7 @@ export default function Home() {
             <span className="visual-caption">
               DATA · SYSTEMS · DIGITAL TRANSFORMATION
             </span>
-          </div>
+          </motion.div>
           <div className="float-card card-analytics">
             <span className="mini-icon">
               <BarChart3 size={18} />
@@ -496,6 +369,11 @@ export default function Home() {
           <ArrowDownLeft size={16} />
         </div>
       </section>
+
+      {siteContent.partners.some(partner => partner.visible) ? <section className="partners-section section-pad" aria-label={rtl ? 'شركاؤنا' : 'Our partners'}><div className="section-kicker"><span/>{rtl ? 'شركاؤنا' : 'Our partners'}</div><div className="partners-grid">{siteContent.partners.filter(partner => partner.visible).map(partner => {
+        const inner = <>{safeImage(partner.image) ? <img src={safeImage(partner.image)} alt={partner.name} loading="lazy"/> : <span className="partner-monogram">{partner.name.slice(0,2)}</span>}<b>{partner.name}</b></>;
+        return safeLink(partner.url) ? <a className="partner-item" href={safeLink(partner.url)} target="_blank" rel="noopener noreferrer" key={partner.id}>{inner}</a> : <div className="partner-item" key={partner.id}>{inner}</div>;
+      })}</div></section> : null}
 
       <section className="about-section section-pad" id="about">
         <div className="about-art" aria-hidden="true">
@@ -564,6 +442,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.45, delay: index * 0.06 }}
+                whileHover={reducedMotion ? undefined : { y: -5 }}
               >
                 <div className={`service-icon service-icon-${index}`}>
                   <Icon size={23} strokeWidth={1.7} />
@@ -647,7 +526,7 @@ export default function Home() {
                 initial={{ opacity: 0, x: rtl ? -12 : 12 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: rtl ? 12 : -12 }}
-                transition={{ duration: 0.24 }}
+                transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
               >
                 <div className="showcase-copy">
                   <span className="showcase-kicker">
@@ -783,6 +662,7 @@ export default function Home() {
           <p>{t.projectsText}</p>
         </div>
         <div className="project-grid">
+          {siteContent.projects.length ? siteContent.projects.filter(project => project.visible).map((project,index) => <a className={`project-card ${index === 0 ? 'project-wide' : ''}`} href={safeLink(project.url) || '#contact'} target={safeLink(project.url) ? '_blank' : undefined} rel={safeLink(project.url) ? 'noopener noreferrer' : undefined} key={project.id}><div className="project-visual cms-project-visual">{safeImage(project.image) ? <img src={safeImage(project.image)} alt={project.title[language]} loading="lazy"/> : <Boxes size={52}/>}<span className="project-tag">{project.category[language]}</span></div><div className="project-caption"><span><small>{String(index+1).padStart(2,'0')} / {project.category[language]}</small><b>{project.title[language]}</b></span><ArrowUpRight size={19}/></div>{project.description[language] ? <p className="cms-project-description">{project.description[language]}</p> : null}</a>) : <>
           <a className="project-card project-wide" href="#contact">
             <div className="project-visual project-visual-data">
               <div className="project-orbit" />
@@ -847,6 +727,7 @@ export default function Home() {
               <ArrowUpRight size={19} />
             </div>
           </a>
+          </>}
         </div>
       </section>
 
@@ -905,6 +786,14 @@ export default function Home() {
             ))}
           </h2>
           <p>{t.contactText}</p>
+          <div className="cms-contact-details">
+            {siteContent.email ? <a href={`mailto:${encodeURIComponent(siteContent.email).replace('%40','@')}`} dir="ltr">{siteContent.email}</a> : null}
+            {siteContent.phone ? <a href={`tel:${siteContent.phone.replace(/[^+0-9]/g,'')}`} dir="ltr">{siteContent.phone}</a> : null}
+            {siteContent.whatsapp ? <a href={`https://wa.me/${siteContent.whatsapp.replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer">{rtl ? 'تواصل عبر واتساب' : 'Contact on WhatsApp'}</a> : null}
+            {siteContent.address[language] ? <span>{siteContent.address[language]}</span> : null}
+            {safeLink(siteContent.linkedin) ? <a href={safeLink(siteContent.linkedin)} target="_blank" rel="noopener noreferrer">LinkedIn</a> : null}
+            {safeLink(siteContent.facebook) ? <a href={safeLink(siteContent.facebook)} target="_blank" rel="noopener noreferrer">Facebook</a> : null}
+          </div>
           <div className="contact-orbit" aria-hidden="true">
             <span />
             <span />
@@ -1002,19 +891,20 @@ export default function Home() {
 
       <footer className="site-footer">
         <a href="#home" className="brand-lockup footer-brand">
-          <Image src={logoSrc} alt="LDG" width={45} height={30} />
+          <Image src={currentLogo} alt="LDG" width={45} height={30} />
           <span className="brand-name">
-            Lilian <b>Data</b> Group
+            {siteContent.companyName}
           </span>
         </a>
         <span className="footer-line">{t.footer}</span>
         <div className="footer-right">
-          <span>© Lilian Data Group. {t.rights}</span>
+          <span>© {siteContent.companyName}. {t.rights}</span>
           <a href="#home" aria-label={rtl ? "العودة للأعلى" : "Back to top"}>
             <ArrowUpRight size={16} />
           </a>
         </div>
       </footer>
     </main>
+    </MotionConfig>
   );
 }

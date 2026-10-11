@@ -6,7 +6,7 @@ import "@fontsource/plus-jakarta-sans/400.css";
 import "@fontsource/plus-jakarta-sans/500.css";
 import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
-import "./globals.css";
+import "@/site/styles/site.css";
 
 export const metadata: Metadata = {
   title: "Lilian Data Group | البيانات والأنظمة والتحول الرقمي",
