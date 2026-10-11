@@ -16,7 +16,7 @@ Run these commands from the workspace root, or drop `--prefix .\frontend` when r
 | Lint | `npm --prefix .\frontend run lint` |
 | Production build (also type-checks) | `npm --prefix .\frontend run build` |
 
-Run `npm --prefix ./frontend test` for the Node.js content validation tests. Use build to verify TypeScript and production export.
+Run `npm --prefix ./frontend test` for the Node.js content validation tests. Lint must stay at zero problems; `react-hooks/set-state-in-effect` is enforced, so set state inside promise callbacks rather than synchronously in an effect. Use build to verify TypeScript and production export.
 
 ## Deployment (all free tiers, project name LDG)
 
@@ -28,18 +28,19 @@ Run `npm --prefix ./frontend test` for the Node.js content validation tests. Use
 
 This Next.js version has breaking changes from what you may know. Before writing Next.js-specific code, read the relevant guide in `frontend/node_modules/next/dist/docs/` and heed deprecation notices. `next dev` re-adds the agent-rules block to `AGENTS.md`, so don't remove it.
 
-`next.config.ts` sets `output: "export"` (static site in `out/`) with `images.unoptimized`; `cacheComponents`/PPR is incompatible with export mode, so don't re-enable it. `NEXT_PUBLIC_BASE_PATH` sets `basePath` for the GitHub Pages build (`/LDG`), and `next/image` sources must be prefixed with it manually (see `logoSrc` in `page.tsx`). Because image optimization is off, the page uses `public/ldg-ribbon-logo.webp` (800px, ~60 KB) rather than the 1.2 MB source PNG; regenerate the WebP with `sharp` if the logo changes.
+`next.config.ts` sets `output: "export"` (static site in `out/`) with `images.unoptimized`; `cacheComponents`/PPR is incompatible with export mode, so don't re-enable it. `NEXT_PUBLIC_BASE_PATH` sets `basePath` for the GitHub Pages build (`/LDG`), and `next/image` sources must be prefixed with it manually (see `logoSrc` in `src/site/HomePage.tsx`). Because image optimization is off, the page uses `public/ldg-ribbon-logo.webp` (800px, ~60 KB) rather than the 1.2 MB source PNG; regenerate the WebP with `sharp` if the logo changes.
 
 TypeScript is pinned to 6.x because typescript-eslint (used by `eslint-config-next`) rejects TypeScript 7. The remaining `npm audit` warnings come from `braces` inside the ESLint toolchain (dev-only, no fix published); don't run `npm audit fix --force`, since it downgrades `eslint-config-next` to 14. Tailwind runs through a Turbopack CSS loader rule (`@tailwindcss/turbopack`), not PostCSS. Layouts use the global `LayoutProps<"/">` type helper.
 
 ## Architecture
 
 - **The public site is a client component.** `frontend/src/site/HomePage.tsx` (`"use client"`) renders the whole homepage. `layout.tsx` only loads fonts, sets metadata, and renders `<html lang="ar" dir="rtl">`.
-- **Bilingual copy:** all user-facing text lives in the `content` object at the top of `page.tsx`, keyed by `ar` and `en`. Its structure is identical in both languages, and it is declared `as const`. Any text change must update both languages, and parallel arrays (such as `products`, `productTypes` and `productText`) must stay aligned with the icon arrays `serviceIcons` and `solutionIcons`. Likewise, `content.*.nav` labels map by index to `navIds`, which must match the `id` of each `<section>` (`about`, `services`, `solutions`, …). Most CTAs and cards link to `#contact`.
+- **Bilingual copy:** static user-facing text lives in the `content` object in `src/site/content/translations.ts`, keyed by `ar` and `en`. Its structure is identical in both languages, and it is declared `as const`. Any text change must update both languages, and parallel arrays (such as `products`, `productTypes` and `productText`) must stay aligned with the icon arrays `serviceIcons` and `solutionIcons`. Likewise, `content.*.nav` labels map by index to `navIds`, which must match the `id` of each `<section>` (`about`, `services`, `solutions`, …). Most CTAs and cards link to `#contact`.
+- **Admin-editable content:** company details, contact links, portfolio and partners come from `SiteContent` (`src/shared/content/site-content.ts`), with `defaultSiteContent` as the static fallback. The homepage subscribes to Firestore `site/published`; `/admin` edits `site/draft` and publishes. Render admin-supplied URLs only through `safeLink`/`safeImage`. See `ADMIN.md`.
 - **Language toggle:** `language` state drives `t = content[language]`. A `useEffect` syncs `document.documentElement.lang` and `dir`, and `<main>` also receives `dir`.
 - **Styling:** semantic CSS classes in `src/site/styles/site.css` (e.g. `hero-section`, `button button-primary`), not Tailwind utility classes. Brand tokens are CSS custom properties on `:root` (`--ink`, `--blue`, `--cyan`, `--violet`, `--pink`, `--gradient`, …). Follow this pattern rather than mixing in utility classes. Responsive rules and a `prefers-reduced-motion` block are at the end of the file.
 - **Contact form:** `sendInquiry` validates the fields and builds a `mailto:` URL with no recipient. The "demo" and "quote" buttons on products set `inquiryKind` and `inquiryInterest` to prefill it.
-- **Assets:** the approved ribbon logo is `public/ldg-ribbon-logo.png` (source), served as `ldg-ribbon-logo.webp`. The other SVGs in `public/` are create-next-app leftovers.
+- **Assets:** the approved ribbon logo is `public/ldg-ribbon-logo.png` (source), served as `ldg-ribbon-logo.webp`.
 
 ## Brand system (from the identity board)
 
