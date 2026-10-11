@@ -25,7 +25,7 @@ import {
   X,
 } from "lucide-react";
 
-const logoSrc = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/ldg-ribbon-logo.png`;
+const logoSrc = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/ldg-ribbon-logo.webp`;
 
 type Language = "ar" | "en";
 const content = {
