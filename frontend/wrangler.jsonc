@@ -1,0 +1,17 @@
+{
+  // Cloudflare Workers Static Assets: serves the static export in out/ (no Worker code, so requests are free).
+  // liliandata.com and www are Worker custom domains (Cloudflare manages their DNS records and certificates).
+  "name": "liliandata",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "liliandata.com", "custom_domain": true },
+    // www keeps its existing proxied CNAME, so it is served through a route.
+    { "pattern": "www.liliandata.com/*", "zone_name": "liliandata.com" }
+  ],
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}
