@@ -2334,6 +2334,7 @@ button {
   color: transparent;
 }
 .legal-article h1 {
+  font-weight: 700;
   margin: 8px 0 4px;
   font-size: clamp(28px, 4vw, 38px);
 }
@@ -2348,12 +2349,17 @@ button {
   border-block-end: 1px solid var(--line);
 }
 .legal-article h2 {
+  font-weight: 700;
   margin: 30px 0 8px;
   font-size: 20px;
 }
 .legal-article ul {
   margin: 0;
   padding-inline-start: 22px;
+  list-style: disc;
+}
+.legal-article li::marker {
+  color: var(--violet);
 }
 .legal-article li {
   margin-block: 6px;
